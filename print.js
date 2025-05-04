@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.textBaseline = 'middle';
         
         // Draw name on the certificate (adjust the Y position based on your template)
-        ctx.fillText(namaPendek.toUpperCase(), canvas.width/2, 1700);
+        ctx.fillText(namaPendek.toUpperCase(), canvas.width/2, 1490);
         
         // Convert to PNG and add to PDF
         const pngImage = await pdfDoc.embedPng(canvas.toDataURL());
