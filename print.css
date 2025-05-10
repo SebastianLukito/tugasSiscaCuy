@@ -9,13 +9,16 @@ body {
 }
 
 .container {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 2px;
     background: url('backgroundlogin.jpg') no-repeat center center/cover;
-    /* min-height: 100px; */
+    transition: transform 0.3s ease;
 }
+
 
 .main {
     display: flex;
@@ -36,11 +39,13 @@ body {
     flex: 1;
     min-width: 300px;
     box-sizing: border-box;
+    min-height: 600px;
+    max-height: 1900px;
+    margin-bottom: 40px;
 }
 
 .left-panel {
     min-height: 90px;
-    max-height: 200px;
 }
 
 .left-panel:hover, .right-panel:hover {
@@ -72,7 +77,6 @@ body {
 
 .input-section, .button-section, .drop-section {
     margin-bottom: 20px;
-    width: 100%;
 }
 
 label {
@@ -80,12 +84,18 @@ label {
     margin-bottom: 5px;
 }
 
+.button-section {
+    width: 100%;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
 button {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     margin-top: 0px;
-    background-color: rgb(35, 35, 35);
+    background-color: rgb(0, 0, 0);
     background-image: url("texture.png");
     color: #e0e0e0;
     border: none;
@@ -95,6 +105,7 @@ button {
     transition: background-color 0.3s ease, transform 0.3s ease;
     box-sizing: border-box;
     font-size: 15px;
+    display: block;
 }
 
 button:hover {
@@ -103,11 +114,10 @@ button:hover {
 }
 
 .qr-display {
-    background: rgba(11, 11, 11, 0.92); /* Efek transparan */
+    background: rgba(94, 94, 94, 0.92); /* Efek transparan */
     backdrop-filter: blur(15px);
     background-image: url("texture.png");
     padding: 20px;
-    border: 1px solid #444;
     border-radius: 10px;
     text-align: center;
     position: relative;
@@ -124,16 +134,15 @@ button:hover {
 
 .drop-section {
     width: 100%;
-    min-height: 150px;
+    min-height: 200px;
     padding: 20px 20px;
     border-radius: 10px;
-    border: 5px solid #444;
+    border: 5px solid #8c1818;
     text-align: center;
     align-content: center;
     background: rgba(255, 255, 255, 0.72); /* Efek transparan */
     backdrop-filter: blur(15px);
     background-image: url("texture.png");
-    color: #000000;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -142,6 +151,7 @@ button:hover {
     max-height: 250px; /* Set maximum height for file list */
     overflow-y: auto;
     user-select: none;
+    color: #000000;
 }
 
 .drop-section.dragover {
@@ -151,31 +161,14 @@ button:hover {
     color: #fff6e7;
 }
 
-.penjelasan {
-    background-color: rgb(255, 255, 255);
-    background-image: url("texture.png");
-    padding: 10px;
-    /* border: 3px solid #444; */
-    border-radius: 10px;
-    text-align: center;
-    position: relative;
-    box-sizing: border-box;
-    margin-top: 105px;
-    margin-bottom: 20px;
-}
-
-.penjelasan h3 {
-    margin: 10px;
-    margin-bottom: -5px;
-    font-weight: bold;
+.drop-section:hover {
+    background: rgba(255, 255, 255, 1);
+    border: 3px dashed #444;
     color: #000000;
-    user-select: none;
+    transform:scale(1.01);
 }
 
-.penjelasan p {
-    color: #4a4a4a;
-    user-select: none;
-}
+
 
 #file-list {
     margin-top: 10px;
@@ -216,7 +209,7 @@ button:hover {
 
 footer {
     min-height: 50px;
-    margin-top: 25px;
+    margin-top: 5px;
     color: #e0e0e0;
     text-align: center;
 }
@@ -290,6 +283,7 @@ footer {
 
 #selectExcel, #selectTemplate, #generateCert {
     background: #2c3e50;
+    background-image: url("texture.png");
     color: white;
     padding: 12px;
     border-radius: 8px;
@@ -305,6 +299,7 @@ footer {
 /* Tambahan styling untuk Excel preview */
 .excel-preview {
     background: rgba(255, 255, 255, 0.72);
+    background-image: url("texture.png");
     backdrop-filter: blur(15px);
     padding: 15px;
     border-radius: 10px;
@@ -340,14 +335,19 @@ footer {
 .excel-table th, .excel-table td {
     border: 1px solid #444;
     padding: 8px;
-    text-align: left;
 }
 
 .excel-table th {
-    background-color: rgba(35, 35, 35, 0.8);
-    color: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.8);
+    background-image: url("texture.png");
+    color: #ffffff;
     position: sticky;
     top: 0;
+    text-align: center;
+}
+
+.excel-table td {
+    text-align: left;
 }
 
 .excel-table tr:nth-child(even) {
@@ -418,6 +418,7 @@ footer {
     padding-block: 15px;
     margin-left: -40px;
     border-radius: 5px;
+    font-weight: 600;
 }
 
 .certificate-item a {
@@ -512,4 +513,45 @@ footer {
 #send-all:hover {
     background-color: rgb(255, 230, 0);
     color: #000;
+}
+
+/* utility */
+.hidden { display: none !important; }
+
+/* keyframes bouncing */
+@keyframes bounceIn {
+0%   { transform: scale(0.3); opacity: 0; }
+50%  { transform: scale(1.05); opacity: 1; }
+70%  { transform: scale(0.9); }
+100% { transform: scale(1); }
+}
+@keyframes bounceOut {
+0%   { transform: scale(1); opacity: 1; }
+20%  { transform: scale(0.9); }
+50%  { transform: scale(1.1); }
+100% { transform: scale(0); opacity: 0; }
+}
+
+/* kelas animasi */
+.bounce-in  { animation: bounceIn 0.6s both; }
+.bounce-out { animation: bounceOut 0.6s both; }
+
+/* styling GIF */
+#loading-gif {
+min-width: 550px;
+margin: 0 auto 20px;
+display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#loading-gif {
+    position: absolute;
+    top: 5%;
+    left: 56%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* border debugging */
 }

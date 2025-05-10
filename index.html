@@ -11,21 +11,19 @@
     <link rel="stylesheet" href="rightpanel.css" />
 </head>
 <body>
+    <div class="marquee" id="marquee">
+        <p id="marqueeText">THIS CERTIFICATE CREATION ENGINE IS MADE WITH LOVE BY SEBASTIANUS LUKITO
+            <!-- <img src="igr.png" alt="Logo Indogrosir" class="marquee-logo"> -->
+        </p>
+    </div>
     <div class="container">
-        <div class="marquee" id="marquee">
-            <p id="marqueeText">UNTUK NGEPRINT SERTIFIKAT TUGAS SISCA CUY
-                <!-- <img src="igr.png" alt="Logo Indogrosir" class="marquee-logo"> -->
-            </p>
-        </div>
-        
-
         <main class="main">
             <section class="left-panel">
-                <h2>DROP EXCEL DI SINI</h2>
+                <h2>CERTIFICATE CREATION</h2>
                 <!-- Bagian Drag & Drop Tetap Ada Di Sini -->
                 <div class="drop-section" id="drop-section">
                     <input type="file" id="excelInput" accept=".xlsx" style="display: none;">
-                    <p>Drag & Drop Excel Di Sini</p>
+                    <p>Drag & Drop or Click Here to Insert Excel File</p>
                     <div id="file-list"></div>
                 </div>
                 <!-- Area untuk menampilkan data spreadsheet -->
@@ -33,32 +31,37 @@
                     <div class="table-container" id="table-container"></div>
                 </div>
                 <div class="button-section">
-                    <button id="merge-btn">Proses</button>
-                    <button id="reset-btn">Masukan Excel Baru</button>
+                    <button id="merge-btn">Create Certificates</button>
+                    <button id="reset-btn">Reset Creation</button>
                 </div>
             </section>
+            <img id="loading-gif" src="sisca.gif" alt="Loading Sisca" class="hidden" />
             <section class="right-panel">
-                <h2>DISPLAY</h2>
-                <div class="qr-display" id="qr-display">
-                    <!-- PDF preview akan ditampilkan di sini -->
-                    <div id="pdf-preview"></div>
-                </div>
-                <div class="button-section">
-                    <button id="download-all">Download Semua Sertifikat</button>
-                </div>
-                <details id="email-config" class="email-config">
-                    <summary>⚙️ Konfigurasi Email</summary>
-                    <div class="email-fields">
-                    <label for="email-subject">Subject</label><br>
-                    <input type="text" id="email-subject" placeholder="Masukkan subject email" style="width:100%; margin-bottom:8px;">
-                    
-                    <label for="email-body">Body</label><br>
-                    <textarea id="email-body" rows="4" placeholder="Masukkan body email" style="width:100%;"></textarea>
-                    
-                    <button id="send-all" style="margin-top:10px;">Kirim Semua Email</button>
+                <!-- di dalam .right-panel -->
+                
+                <div class="panel-content">
+                    <h2>CERTIFICATE LIST</h2>
+                    <div class="qr-display" id="qr-display">
+                        <!-- PDF preview akan ditampilkan di sini -->
+                        <div id="pdf-preview"></div>
                     </div>
-                </details>
-                <p>This engine is exclusively crafted for Sisca Cuy</p>
+                    <div class="button-section">
+                        <button id="download-all">Download All Certificates</button>
+                    </div>
+                    <!-- <details id="email-config" class="email-config">
+                        <summary>⚙️ Email Configuration (Disabled On Purpose)</summary>
+                        <div class="email-fields">
+                        <label for="email-subject">Subject</label><br>
+                        <input type="text" id="email-subject" placeholder="Masukkan subject email" style="width:100%; margin-bottom:8px;">
+                        
+                        <label for="email-body">Body</label><br>
+                        <textarea id="email-body" rows="4" placeholder="Masukkan body email" style="width:100%;"></textarea>
+                        
+                        <button id="send-all" style="margin-top:10px;">Kirim Semua Email</button>
+                        </div>
+                    </details> -->
+                    <p>This engine is exclusively crafted for Sisca Puspita Rani</p>
+                </div>
             </section>
 
         </main>
@@ -66,7 +69,7 @@
     </div>
     <!-- Footer -->
     <footer>
-        <p>&copy; Sisca Cuy and The Gang</p>
+        <p>&copy; Sebastianus Lukito 2025</p>
     </footer>
 
     <!-- Loading Popup -->
@@ -99,6 +102,7 @@
     </script>
 
     <script src="https://smtpjs.com/v3/smtp.js"></script>
+
     
     <script defer src="print.js"></script> 
 </body>

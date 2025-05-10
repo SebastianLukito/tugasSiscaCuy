@@ -1,3 +1,13 @@
+// Helper: setiap kata diawali huruf kapital
+function toTitleCase(str) {
+    return str
+    .toLowerCase()
+    .split(' ')
+    .filter(w => w)               // buang spasi ekstra
+    .map(w => w[0].toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Element references
     const mergeBtn       = document.getElementById('merge-btn');
@@ -12,9 +22,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendAllBtn     = document.getElementById('send-all');
     const loadingPopup   = document.getElementById('loading-popup');
 
+    // References for GIF & panel
+    const panelContent     = document.querySelector('.panel-content');
+    const loadingGif     = document.getElementById('loading-gif');
+
     let excelFile = null;
     let excelData = null;
     let individualCertificates = [];
+
+    // Helper functions for bounce animations
+    function showWithBounce(el) {
+    el.classList.remove('hidden', 'bounce-out');
+    el.classList.add('bounce-in');
+    }
+    function hideWithBounce(el) {
+    el.classList.remove('bounce-in');
+    el.classList.add('bounce-out');
+    el.addEventListener('animationend', () => {
+        el.classList.add('hidden');
+    }, { once: true });
+    }
+
+    // Initial state: hide panel, show GIF
+    panelContent.classList.add('hidden');
+    showWithBounce(loadingGif);
 
     // --- Drag & Drop Excel ---
     dropSection.addEventListener('dragover', e => {
@@ -61,17 +92,28 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
     }
 
-    // --- Reset form ---
     resetBtn.addEventListener('click', () => {
-    excelFile = null;
-    excelData = null;
-    individualCertificates = [];
-    fileList.innerHTML = '';
-    excelPreview.style.display = 'none';
-    tableContainer.innerHTML = '';
-    excelInput.value = '';
-    dropSection.querySelector('p').style.display = 'block';
-    document.querySelector('.right-panel').classList.remove('active');
+        // 1. Hide panel dan reset state
+        hideWithBounce(panelContent);
+        document.querySelector('.right-panel').classList.remove('active');
+        excelFile = null;
+        excelData = null;
+        individualCertificates = [];
+        fileList.innerHTML = '';
+        excelPreview.style.display = 'none';
+        tableContainer.innerHTML = '';
+        excelInput.value = '';
+        dropSection.querySelector('p').style.display = 'block';
+    
+        // 2. Bersihkan semua kelas animasi lama di GIF
+        loadingGif.classList.remove('hidden', 'bounce-in', 'bounce-out');
+        void loadingGif.offsetWidth; // paksa reflow
+    
+        // 3. Tampilkan lagi dengan animasi masuk
+        showWithBounce(loadingGif);
+    
+        // 4. Reload page
+        window.location.reload();
     });
 
     // --- Preview Excel hanya Nama & Email ---
@@ -82,26 +124,27 @@ document.addEventListener('DOMContentLoaded', function () {
         excelData = data;
 
         if (data.length > 0) {
-        const displayKeys = ['name', 'email'];
-        const labels      = { name: 'Nama', email: 'Email' };
+            const displayKeys = ['name', 'email'];
+            const labels      = { name: 'Nama', email: 'Email' };
 
-        let html = '<table class="excel-table"><thead><tr>';
-        displayKeys.forEach(key => {
-            html += `<th>${labels[key]}</th>`;
-        });
-        html += '</tr></thead><tbody>';
-
-        data.forEach(row => {
-            html += '<tr>';
+            let html = '<table class="excel-table"><thead><tr>';
             displayKeys.forEach(key => {
-            html += `<td>${row[key] || ''}</td>`;
+                html += `<th>${labels[key]}</th>`;
             });
-            html += '</tr>';
-        });
-        html += '</tbody></table>';
+            html += '</tr></thead><tbody>';
 
-        tableContainer.innerHTML = html;
-        excelPreview.style.display = 'block';
+            data.forEach(row => {
+                html += '<tr>';
+                displayKeys.forEach(key => {
+                html += `<td>${row[key] || ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+
+            tableContainer.innerHTML = html;
+            excelPreview.style.display = 'block';
+            
         }
     } catch (err) {
         console.error('Error previewing Excel:', err);
@@ -113,23 +156,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Baca & Parse Excel: nama, tanggal, email ---
     async function processExcel(file) {
-    return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => {
-        try {
+            try {
             const arr = new Uint8Array(e.target.result);
             const wb  = XLSX.read(arr, { type: 'array' });
             const ws  = wb.Sheets[wb.SheetNames[0]];
             const rows= XLSX.utils.sheet_to_json(ws, {
-            header: 1,
-            defval: '',
-            blankrows: false
+                header: 1, defval: '', blankrows: false
             });
 
-            if (rows.length < 2) throw new Error('File Excel tidak memiliki data cukup');
+            if (rows.length < 2)
+                throw new Error('File Excel tidak memiliki data cukup');
 
             const headers = rows[0].map(h =>
-            typeof h === 'string' ? h.trim().toLowerCase() : ''
+                typeof h === 'string' ? h.trim().toLowerCase() : ''
             );
             const nameIdx  = headers.findIndex(h => h.includes('nama') || h.includes('name'));
             const dateIdx  = headers.findIndex(h => h.includes('tanggal') || h.includes('date'));
@@ -138,25 +180,28 @@ document.addEventListener('DOMContentLoaded', function () {
             if (nameIdx < 0) throw new Error('Kolom nama tidak ditemukan');
 
             const participants = rows.slice(1)
-            .map(r => ({
-                name : r[nameIdx]  || '',
-                date : r[dateIdx]  || '',
-                email: emailIdx >= 0 ? r[emailIdx] || '' : ''
-            }))
-            .filter(p => p.name.trim() !== '');
+                .map(r => {
+                    const rawName = r[nameIdx] || '';
+                    return {
+                        name : toTitleCase(rawName),
+                        date : r[dateIdx]  || '',
+                        email: emailIdx >= 0 ? r[emailIdx] || '' : ''
+                    };
+                })
+                .filter(p => p.name.trim() !== '');
 
             if (!participants.length)
-            throw new Error('Tidak ada data peserta valid');
+                throw new Error('Tidak ada data peserta valid');
 
             resolve(participants);
-        } catch (err) {
+            } catch (err) {
             console.error('Error processing Excel:', err);
             reject(new Error('Gagal memproses file Excel. Pastikan kolom nama, tanggal, & email ada.'));
-        }
+            }
         };
         reader.onerror = () => reject(new Error('Gagal membaca file'));
         reader.readAsArrayBuffer(file);
-    });
+        });
     }
 
     // --- Generate PDF per peserta ---
@@ -170,30 +215,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Load template sertifikat
         const templateBytes = await fetch('sertifikat.jpg').then(res => {
-        if (!res.ok) throw new Error('Template sertifikat tidak ditemukan');
-        return res.arrayBuffer();
+            if (!res.ok) throw new Error('Template sertifikat tidak ditemukan');
+            return res.arrayBuffer();
         });
 
         const participants = excelData || await processExcel(excelFile);
         if (!participants.length)
-        throw new Error('Tidak ada data peserta ditemukan');
+            throw new Error('Tidak ada data peserta ditemukan');
 
         individualCertificates = [];
 
         for (const p of participants) {
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        const font   = await pdfDoc.embedStandardFont(PDFLib.StandardFonts.Helvetica);
-        await createCertificatePage(pdfDoc, p, templateBytes, font);
-        const pdfBytes = await pdfDoc.save();
-        individualCertificates.push({
-            name:  p.name,
-            email: p.email,
-            pdfBytes
-        });
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const font   = await pdfDoc.embedStandardFont(PDFLib.StandardFonts.Helvetica);
+            await createCertificatePage(pdfDoc, p, templateBytes, font);
+            const pdfBytes = await pdfDoc.save();
+            individualCertificates.push({ name: p.name, email: p.email, pdfBytes });
         }
 
         renderCertificateList(individualCertificates);
         document.querySelector('.right-panel').classList.add('active');
+        // setelah sertifikat dibuat: toggle GIF & panel
+        hideWithBounce(loadingGif);
+        showWithBounce(panelContent);
     } catch (err) {
         console.error(err);
         alert(`Gagal membuat sertifikat: ${err.message}`);
@@ -217,12 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const x        = (width - textWidth) / 2;
     const y        = height - 1520;
 
-    page.drawText(text, {
-        x, y,
-        size: fontSize,
-        font,
-        color: PDFLib.rgb(0, 0, 0),
-    });
+    page.drawText(text, { x, y, size: fontSize, font, color: PDFLib.rgb(0,0,0) });
     }
 
     // --- Render list download di panel kanan ---
@@ -299,44 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- Kirim semua email ---
-    if (sendAllBtn) {
-    sendAllBtn.addEventListener('click', async () => {
-        const subject = document.getElementById('email-subject').value.trim();
-        const body    = document.getElementById('email-body').value.trim();
-        if (!subject || !body) {
-        return alert('Subject dan body email harus diisi.');
-        }
-        if (!individualCertificates.length) {
-        return alert('Belum ada sertifikat untuk dikirim.');
-        }
-
-        // Ganti dengan kredensial SMTPJS Anda
-        const SECURE_TOKEN = 'YOUR_SMTPJS_SECURE_TOKEN';
-        const FROM_EMAIL   = 'youremail@example.com';
-
-        for (const { name, email, pdfBytes } of individualCertificates) {
-        try {
-            const base64 = await pdfBytesToBase64(pdfBytes);
-            await Email.send({
-            SecureToken : SECURE_TOKEN,
-            To          : email,
-            From        : FROM_EMAIL,
-            Subject     : subject,
-            Body        : body,
-            Attachments : [{
-                name : `Sertifikat-${name.replace(/\s+/g, '_')}.pdf`,
-                data : `data:application/pdf;base64,${base64}`
-            }]
-            });
-            console.log(`✔️ Terkirim: ${name} → ${email}`);
-        } catch (err) {
-            console.error(`❌ Gagal kirim ke ${email}:`, err);
-        }
-        }
-
-        alert('Proses kirim email selesai. Cek console untuk detail.');
-    });
-    }
+    
 
     // --- Hapus tombol download default (jika ada) ---
     const downloadBtn = document.getElementById('download-btn');
