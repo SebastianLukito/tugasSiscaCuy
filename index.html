@@ -44,8 +44,20 @@
                     <div id="pdf-preview"></div>
                 </div>
                 <div class="button-section">
-                    <button id="download-btn" style="display:none;">Download PDF Hasilnya</button>
+                    <button id="download-all">Download Semua Sertifikat</button>
                 </div>
+                <details id="email-config" class="email-config">
+                    <summary>⚙️ Konfigurasi Email</summary>
+                    <div class="email-fields">
+                    <label for="email-subject">Subject</label><br>
+                    <input type="text" id="email-subject" placeholder="Masukkan subject email" style="width:100%; margin-bottom:8px;">
+                    
+                    <label for="email-body">Body</label><br>
+                    <textarea id="email-body" rows="4" placeholder="Masukkan body email" style="width:100%;"></textarea>
+                    
+                    <button id="send-all" style="margin-top:10px;">Kirim Semua Email</button>
+                    </div>
+                </details>
                 <p>This engine is exclusively crafted for Sisca Cuy</p>
             </section>
 
@@ -72,10 +84,22 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
-    <!-- PDF-Lib Library -->
+    <!-- XLSX Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- PDF-Lib Library -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- JSZip Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- di head atau sebelum print.js -->
+    <script src="https://unpkg.com/@pdf-lib/fontkit@^1.0.0/dist/fontkit.umd.min.js"></script>
+
+    <script>
+    // daftarkan fontkit sebelum kamu membuat dokumen PDF
+    PDFLib.PDFDocument.registerFontkit(fontkit);
+    </script>
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
     
-    <script defer src="print.js"></script>
+    <script defer src="print.js"></script> 
 </body>
 </html>
