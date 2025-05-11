@@ -10,6 +10,7 @@
     white-space: nowrap;
     border-radius: 10px;
     user-select: none;
+    z-index: 501;
 }
 
 .marquee:hover {

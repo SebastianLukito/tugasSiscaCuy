@@ -29,6 +29,7 @@ body {
     width: 100%;
     max-width: 1290px;
     box-sizing: border-box;
+    z-index: 501;
 }
 
 .left-panel, .right-panel {
@@ -43,6 +44,7 @@ body {
     max-height: 1900px;
     margin-bottom: 40px;
     padding-inline: 25px;
+    z-index: 501;
 }
 
 .left-panel {
@@ -87,7 +89,7 @@ label {
 
 .button-section {
     width: 100%;
-    margin-top: 50px;
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 
@@ -558,3 +560,28 @@ display: block;
     z-index: 9999;
     /* border debugging */
 }
+
+/* canvas hujan full-screen */
+#rain-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;  /* supaya klik tetap ke bawah */
+    z-index: 500;          /* pastikan di atas background tapi di bawah UI */
+}
+
+/* #sound-overlay {
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(255, 255, 255, 0.1);
+    color:#fff;
+    font-size:1.2rem;
+    z-index:10000;
+    cursor:pointer;
+    user-select:none;
+} */

@@ -8,7 +8,78 @@ function toTitleCase(str) {
     .join(' ');
 }
 
+// ---- Rain effect ----
+class Rain {
+    constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx    = this.canvas.getContext('2d');
+    this.drops  = [];
+    this.animId = null;
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+    }
+    resize() {
+    this.canvas.width  = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+    }
+    // mulai hujan: buat sekumpulan tetesan
+    start(numDrops = 200) {
+    this.drops = [];
+    for (let i = 0; i < numDrops; i++) {
+        this.drops.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        length: 10 + Math.random() * 20,
+        speed: 2 + Math.random() * 10
+        });
+    }
+    this.loop();
+    }
+    // hentikan animasi
+    stop() {
+    if (this.animId) cancelAnimationFrame(this.animId);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    // jalankan loop animasi
+    loop() {
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.strokeStyle = 'rgba(174,194,224,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (const drop of this.drops) {
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x, drop.y + drop.length);
+        drop.y += drop.speed;
+        if (drop.y > this.canvas.height) {
+        drop.y = -drop.length;
+        drop.x = Math.random() * this.canvas.width;
+        }
+    }
+    ctx.stroke();
+    this.animId = requestAnimationFrame(() => this.loop());
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    // audio background
+    const rainAudio = document.getElementById('rain-audio');
+    // const soundOverlay = document.getElementById('sound-overlay');
+    
+    // inisialisasi rain effect
+    const rain = new Rain('rain-canvas');
+    rain.start(250);
+    rainAudio.play().catch(console.error);
+
+    // fungsi stop hujan & audio
+    // function stopRainIfReady() {
+    //     if (excelFile) {
+    //     rain.stop();
+    //     rainAudio.pause();
+    //     rainAudio.currentTime = 0;
+    //     }
+    // }
+
     // Element references
     const mergeBtn       = document.getElementById('merge-btn');
     const resetBtn       = document.getElementById('reset-btn');
@@ -68,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
         alert('Hanya file Excel (.xlsx) yang diperbolehkan!');
     }
+    // stopRainIfReady();
     });
     dropSection.addEventListener('click', () => excelInput.click());
     excelInput.addEventListener('change', e => {
@@ -81,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Format file tidak valid. Harap pilih file .xlsx');
         excelInput.value = '';
     }
+    // stopRainIfReady();
     });
 
     function displayFile(file) {
