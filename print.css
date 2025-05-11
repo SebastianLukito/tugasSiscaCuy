@@ -34,7 +34,7 @@ body {
 .left-panel, .right-panel {
     background: rgba(255, 255, 255, 0.2); /* Efek transparan */
     backdrop-filter: blur(5px);
-    padding: 20px;
+    padding-block: 20px;
     border-radius: 10px;
     flex: 1;
     min-width: 300px;
@@ -42,6 +42,7 @@ body {
     min-height: 600px;
     max-height: 1900px;
     margin-bottom: 40px;
+    padding-inline: 25px;
 }
 
 .left-panel {
@@ -123,8 +124,9 @@ button:hover {
     position: relative;
     box-sizing: border-box;
     min-height: 400px;
-    max-height: 550px;
+    max-height: 502px;
     margin-bottom: 15px;
+    overflow-y: auto;    /* tambahkan ini */
 }
 
 .qr-display p {
@@ -134,13 +136,13 @@ button:hover {
 
 .drop-section {
     width: 100%;
-    min-height: 200px;
-    padding: 20px 20px;
+    min-height: 150px;
+    padding: 10px 20px;
     border-radius: 10px;
     border: 5px solid #8c1818;
     text-align: center;
     align-content: center;
-    background: rgba(255, 255, 255, 0.72); /* Efek transparan */
+    background: rgba(253, 253, 253, 0.72); /* Efek transparan */
     backdrop-filter: blur(15px);
     background-image: url("texture.png");
     font-weight: bold;
@@ -406,6 +408,7 @@ footer {
 .certificate-list {
     list-style: none;
     margin: 0;
+    max-height: 600px;
 }
 
 .certificate-item {
