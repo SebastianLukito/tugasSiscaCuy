@@ -78,6 +78,18 @@ body {
     user-select: none;
 }
 
+.message p{
+    color: #000000;
+    text-align: center;
+    background: rgba(255, 204, 0, 0.72); /* Efek transparan */
+    backdrop-filter: blur(15px);
+    padding: 10px;
+    border-radius: 10px;
+    user-select: none;
+    margin-top: 140px;
+}
+
+
 .input-section, .button-section, .drop-section {
     margin-bottom: 20px;
 }
@@ -126,7 +138,7 @@ button:hover {
     position: relative;
     box-sizing: border-box;
     min-height: 400px;
-    max-height: 502px;
+    max-height: 642px;
     margin-bottom: 15px;
     overflow-y: auto;    /* tambahkan ini */
 }
@@ -170,6 +182,7 @@ button:hover {
     border: 3px dashed #444;
     color: #000000;
     transform:scale(1.01);
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 
 
@@ -302,10 +315,12 @@ footer {
 
 /* Tambahan styling untuk Excel preview */
 .excel-preview {
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(18, 18, 18, 0.72);
     background-image: url("texture.png");
     backdrop-filter: blur(15px);
-    padding: 15px;
+    padding-block: 17px;
+    padding-right: 17px;
+    padding-left: 19px;
     border-radius: 10px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -325,41 +340,78 @@ footer {
     user-select: none;
 }
 
+/* Bungkus tabel dengan border-radius dan overflow hidden */
 .table-container {
-    width: 100%;
-    overflow-x: auto;
+    max-height: 300px;      
+    overflow-y: auto;
+    position: relative;     
+    border-radius: 8px;      /* sudut membulat */
+    overflow: auto;        /* potong isi yang melampaui radius */
 }
 
+/* Buat border-collapse separate agar radius bekerja */
 .excel-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;  /* ganti dari collapse */
+    border-spacing: 0;          /* hilangkan celah */
     font-size: 14px;
 }
 
-.excel-table th, .excel-table td {
-    border: 1px solid #444;
+/* Radius di sudut atas header */
+.excel-table th:first-child {
+    border-top-left-radius: 8px;
+}
+.excel-table th:last-child {
+    border-top-right-radius: 8px;
+}
+
+/* Radius di sudut bawah baris terakhir */
+.excel-table tr:last-child td:first-child {
+    border-bottom-left-radius: 8px;
+}
+.excel-table tr:last-child td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+/* Border dan padding tetap */
+.excel-table th, 
+.excel-table td {
+    /* border: 1px solid #444; */
     padding: 8px;
 }
 
+/* Sticky header seperti sebelumnya */
 .excel-table th {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgb(10, 66, 101);
     background-image: url("texture.png");
     color: #ffffff;
     position: sticky;
     top: 0;
     text-align: center;
+    z-index: 10; /* agar tetap di atas baris lain */
 }
 
+/* Sisanya tetap sama */
 .excel-table td {
     text-align: left;
 }
 
+.excel-table td:first-child {
+    color: #000000;
+}
+
 .excel-table tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.excel-table tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 1);
 }
 
 .excel-table tr:hover {
-    background-color: rgba(255, 204, 0, 0.3);
+    background-color: rgb(255, 244, 200);
+    font-weight: bold;
+    transition: background-color 0.03s linear;
 }
 
 /* PDF Preview styling */
@@ -410,7 +462,8 @@ footer {
 .certificate-list {
     list-style: none;
     margin: 0;
-    max-height: 600px;
+    min-height: 1700px;
+    max-height: 1847px;
 }
 
 .certificate-item {
@@ -426,6 +479,14 @@ footer {
     font-weight: 600;
 }
 
+.certificate-item:hover {
+    background-color: rgb(255, 246, 162);
+    color: #000000;
+    transform: scale(1.01);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
 .certificate-item a {
     display: flex;
     align-items: center;
@@ -437,6 +498,24 @@ footer {
     width: 24px;
     height: 24px;
     margin-right: 8px;
+}
+
+#download-all{
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: rgb(35, 35, 35);
+    color: #e0e0e0;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#download-all:hover {
+    background-color: rgb(255, 34, 0);
+    color: #ffffff;
 }
 
 .email-config {
@@ -571,17 +650,51 @@ display: block;
     z-index: 500;          /* pastikan di atas background tapi di bawah UI */
 }
 
-/* #sound-overlay {
+/* Modal overlay */
+.audio-modal {
     position: fixed;
-    top:0; left:0;
-    width:100vw; height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:rgba(255, 255, 255, 0.1);
-    color:#fff;
-    font-size:1.2rem;
-    z-index:10000;
-    cursor:pointer;
-    user-select:none;
-} */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;            /* Pastikan modal di atas semua UI */
+}
+
+/* Konten modal */
+.modal-content {
+    background: rgb(255, 255, 255, 0.9);
+    padding-inline: 30px;
+    padding-bottom: 20px;
+    padding-top: 15px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 54px 52px rgba(0,0,0,0.3);
+}
+
+.modal-content p {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+#audio-confirm-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #ffd712;
+    background-image: url("texture.png");
+    color: #000000;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#audio-confirm-btn:hover {
+    transform: scale(1.05);
+    background-color: #333;
+    color: beige;
+    background-image: url("texture.png");
+}
+

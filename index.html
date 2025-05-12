@@ -11,17 +11,22 @@
     <link rel="stylesheet" href="rightpanel.css" />
 </head>
 <body>
+    <div id="audio-modal" class="audio-modal">
+        <div class="modal-content">
+        <p>Dengan klik tombol ini, kamu menyatakan <br>bahwa <u>Sebastianus Lukito itu keren.</u></p>
+        <button id="audio-confirm-btn">Setuju</button>
+        </div>
+    </div>
     <canvas id="rain-canvas"></canvas>
     <!-- audio rain loop -->
-    <audio id="rain-audio" src="rain.mp3" loop></audio>
-    <div id="sound-overlay">
-        <!-- +   Klik di mana saja untuk memutar suara hujan -->
-    </div>
+    <audio id="rain-audio" src="rain.mp3" loop muted autoplay></audio>
+
     <div class="marquee" id="marquee">
         <p id="marqueeText">THIS CERTIFICATE CREATION ENGINE IS MADE WITH LOVE BY SEBASTIANUS LUKITO
             <!-- <img src="igr.png" alt="Logo Indogrosir" class="marquee-logo"> -->
         </p>
     </div>
+
     <div class="container">
         <main class="main">
             <section class="left-panel">
@@ -40,6 +45,9 @@
                     <button id="merge-btn">Create Certificates</button>
                     <button id="reset-btn">Reset Creation</button>
                 </div>
+                <div class="message" id="message">
+                    <p>If there is a problem with the engine, don't hesitate to contact <b>the developer, the king, the legend named Sebastianus Lukito.</b></p>
+                </div>
             </section>
             <img id="loading-gif" src="sisca.gif" alt="Loading Sisca" class="hidden" />
             <section class="right-panel">
@@ -47,13 +55,15 @@
                 
                 <div class="panel-content">
                     <h2>CERTIFICATE LIST</h2>
+                    <div class="button-section">
+                        <button id="download-all">Download All Certificates</button>
+                        <p>To download all certificates, click the button above</p>
+                    </div>
                     <div class="qr-display" id="qr-display">
                         <!-- PDF preview akan ditampilkan di sini -->
                         <div id="pdf-preview"></div>
                     </div>
-                    <div class="button-section">
-                        <button id="download-all">Download All Certificates</button>
-                    </div>
+                    
                     <!-- <details id="email-config" class="email-config">
                         <summary>⚙️ Email Configuration (Disabled On Purpose)</summary>
                         <div class="email-fields">

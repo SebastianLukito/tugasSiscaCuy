@@ -63,13 +63,23 @@ class Rain {
 
 document.addEventListener('DOMContentLoaded', function () {
     // audio background
-    const rainAudio = document.getElementById('rain-audio');
-    // const soundOverlay = document.getElementById('sound-overlay');
-    
+    const rainAudio      = document.getElementById('rain-audio');
+    const audioModal     = document.getElementById('audio-modal');
+    const audioConfirm   = document.getElementById('audio-confirm-btn');
+
+    // 1. Tampilkan modal (CSS .audio-modal sudah display:flex)
+    audioModal.style.display = 'flex';
+
+    // 2. Saat user klik tombol: unmute, play, sembunyikan modal
+    audioConfirm.addEventListener('click', () => {
+        rainAudio.muted = false;           // buka mute
+        rainAudio.play().catch(console.error);
+        audioModal.style.display = 'none';
+    });
+        
     // inisialisasi rain effect
     const rain = new Rain('rain-canvas');
     rain.start(250);
-    rainAudio.play().catch(console.error);
 
     // fungsi stop hujan & audio
     // function stopRainIfReady() {
