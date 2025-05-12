@@ -284,6 +284,34 @@ footer {
     }
 }
 
+@media screen and ((max-width: 1024px) and (orientation: portrait)), (max-width: 768px) {
+    /* sembunyikan GIF loading */
+    #loading-gif {
+    display: none !important;
+    }
+
+    /* ubah main jadi kolom */
+    .main {
+    flex-direction: column;
+    }
+
+    /* default: left-panel di atas right-panel */
+    .left-panel {
+    order: 0;
+    }
+
+    /* jika right-panel sudah diberi class `active`, diprioritaskan di atas */
+    .right-panel.active {
+    order: -1;
+    }
+
+    /* sembunyikan left-panel saat right-panel aktif */
+    .main:has(.right-panel.active) .left-panel {
+    display: none !important;
+    }
+}
+
+
 /* Tambahkan di CSS (print.css) */
 .certificate-section {
     background: rgba(255, 255, 255, 0.2);
