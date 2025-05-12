@@ -19,10 +19,10 @@
     </div>
     <canvas id="rain-canvas"></canvas>
     <!-- audio rain loop -->
-    <audio id="rain-audio" src="rain.mp3" loop muted autoplay></audio>
+    <audio id="rain-audio" src="rain.mp3" loop autoplay></audio>
 
     <div class="marquee" id="marquee">
-        <p id="marqueeText">THIS CERTIFICATE CREATION ENGINE IS MADE WITH LOVE BY SEBASTIANUS LUKITO
+        <p id="marqueeText">THIS CERTIFICATE CREATION ENGINE IS MADE WITH LOVE BY SEBASTIANUS LUKITO ⚡
             <!-- <img src="igr.png" alt="Logo Indogrosir" class="marquee-logo"> -->
         </p>
     </div>
@@ -37,6 +37,16 @@
                     <p>Drag & Drop or Click Here to Insert Excel File</p>
                     <div id="file-list"></div>
                 </div>
+
+                <!-- Dropdown Manual Input -->
+                <div class="manual-dropdown">
+                    <button id="manual-toggle" class="dropdown-btn">Manual Input Option</button>
+                    <div id="manual-input-container" class="manual-input hidden bounce-out">
+                    <input type="text" id="manual-name" placeholder="Masukkan nama peserta" />
+                    <button id="add-manual" class="add-btn">Create Certificate for This Specific Name</button>
+                    </div>
+                </div>
+
                 <!-- Area untuk menampilkan data spreadsheet -->
                 <div class="excel-preview" id="excel-preview" style="display: none;">
                     <div class="table-container" id="table-container"></div>
@@ -46,7 +56,20 @@
                     <button id="reset-btn">Reset Creation</button>
                 </div>
                 <div class="message" id="message">
-                    <p>If there is a problem with the engine, don't hesitate to contact <b>the developer, the king, the legend named Sebastianus Lukito.</b></p>
+                    <p>
+                    If there is a problem with the engine, don't hesitate to contact
+                    <b>the developer, the king, the legend named Sebastianus Lukito.</b>
+                    </p>
+                    <p>
+                    Download template spreadsheet here:
+                    <a
+                        href="https://docs.google.com/spreadsheets/d/10FE42f-vofgH1zkBxZUj8I2_JdYJ6aACHuH90rjpRkU/edit?hl=id&gid=1988053512#gid=1988053512"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Google Spreadsheet Template
+                    </a>
+                    </p>
                 </div>
             </section>
             <img id="loading-gif" src="sisca.gif" alt="Loading Sisca" class="hidden" />
@@ -87,6 +110,8 @@
     <footer>
         <p>&copy; Sebastianus Lukito 2025</p>
     </footer>
+    <!-- Lightning overlay -->
+    <div id="lightning-overlay"></div>
 
     <!-- Loading Popup -->
     <div id="loading-popup" class="loading-popup" style="display: none;">
@@ -121,5 +146,6 @@
 
     
     <script defer src="print.js"></script> 
+    
 </body>
 </html>

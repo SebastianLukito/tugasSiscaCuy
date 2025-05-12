@@ -10,52 +10,88 @@ function toTitleCase(str) {
 
 // ---- Rain effect ----
 class Rain {
-    constructor(canvasId) {
-    this.canvas = document.getElementById(canvasId);
-    this.ctx    = this.canvas.getContext('2d');
-    this.drops  = [];
-    this.animId = null;
+    /**
+     * @param {string} canvasId        — id elemen <canvas>
+     * @param {number} maxAngle        — sudut maksimum (radian) dari vertikal (default ±0.4 ≈23°)
+     * @param {number} windChangeInterval — interval ganti angin (ms), default 5000ms
+     */
+    constructor(canvasId, maxAngle = 0.4, windChangeInterval = 5000) {
+    this.canvas            = document.getElementById(canvasId);
+    this.ctx               = this.canvas.getContext('2d');
+    this.drops             = [];
+    this.animId            = null;
+    this.maxAngle          = maxAngle;
+    this.windChangeInterval= windChangeInterval;
+    this.windAngle         = 0;                // sudut angin saat ini
+    this.lastWindChange    = 0;                // timestamp terakhir ganti angin
+
     this.resize();
     window.addEventListener('resize', () => this.resize());
     }
+
     resize() {
     this.canvas.width  = window.innerWidth;
     this.canvas.height = window.innerHeight;
     }
-    // mulai hujan: buat sekumpulan tetesan
+
     start(numDrops = 200) {
     this.drops = [];
     for (let i = 0; i < numDrops; i++) {
-        this.drops.push({
-        x: Math.random() * this.canvas.width,
-        y: Math.random() * this.canvas.height,
-        length: 10 + Math.random() * 20,
-        speed: 2 + Math.random() * 10
-        });
+        const length = 10 + Math.random() * 20;
+        const speed  = 2  + Math.random() * 10;
+        // kita tidak simpan sudut di tiap tetesan, cukup global
+        this.drops.push({ x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        length, speed });
     }
+    // inisialisasi angin pertama
+    this.windAngle      = (Math.random() * 2 - 1) * this.maxAngle;
+    this.lastWindChange = performance.now();
     this.loop();
     }
-    // hentikan animasi
+
     stop() {
     if (this.animId) cancelAnimationFrame(this.animId);
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    // jalankan loop animasi
+
     loop() {
+    const now = performance.now();
+
+    // apakah sudah waktunya ganti arah angin?
+    if (now - this.lastWindChange > this.windChangeInterval) {
+        this.windAngle      = (Math.random() * 2 - 1) * this.maxAngle;
+        this.lastWindChange = now;
+    }
+
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(174,194,224,0.35)';
+    ctx.lineWidth   = 1;
     ctx.beginPath();
+
     for (const drop of this.drops) {
+        // pergeseran per frame berdasarkan angin global
+        const dx = Math.sin(this.windAngle) * drop.speed;
+        const dy = Math.cos(this.windAngle) * drop.speed;
+
+        // gambar garis hujan searah angin
+        const x2 = drop.x + Math.sin(this.windAngle) * drop.length;
+        const y2 = drop.y + Math.cos(this.windAngle) * drop.length;
         ctx.moveTo(drop.x, drop.y);
-        ctx.lineTo(drop.x, drop.y + drop.length);
-        drop.y += drop.speed;
-        if (drop.y > this.canvas.height) {
+        ctx.lineTo(x2, y2);
+
+        // update posisi
+        drop.x += dx;
+        drop.y += dy;
+
+        // reset saat keluar layar
+        if (drop.y > this.canvas.height || drop.x < 0 || drop.x > this.canvas.width) {
         drop.y = -drop.length;
         drop.x = Math.random() * this.canvas.width;
         }
     }
+
     ctx.stroke();
     this.animId = requestAnimationFrame(() => this.loop());
     }
@@ -66,6 +102,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const rainAudio      = document.getElementById('rain-audio');
     const audioModal     = document.getElementById('audio-modal');
     const audioConfirm   = document.getElementById('audio-confirm-btn');
+    // --- Lightning effect (distant flashes) ---
+    const lightningOverlay = document.getElementById('lightning-overlay');
 
     // 1. Tampilkan modal (CSS .audio-modal sudah display:flex)
     audioModal.style.display = 'flex';
@@ -78,17 +116,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
         
     // inisialisasi rain effect
-    const rain = new Rain('rain-canvas');
-    rain.start(250);
+    const rain = new Rain('rain-canvas', 0.52 /*≈30°*/, 18000 /*ms*/);
+    rain.start(450);
 
-    // fungsi stop hujan & audio
-    // function stopRainIfReady() {
-    //     if (excelFile) {
-    //     rain.stop();
-    //     rainAudio.pause();
-    //     rainAudio.currentTime = 0;
-    //     }
-    // }
+    function triggerFlash() {
+        lightningOverlay.classList.add('flash');
+        lightningOverlay.addEventListener('animationend', () => {
+        lightningOverlay.classList.remove('flash');
+        }, { once: true });
+    }
+    
+    function scheduleLightning() {
+        // jeda acak antara 5–25 detik
+        const delay = Math.random() * 10000 + 500;
+        setTimeout(() => {
+        // dua kilatan berurutan dengan jarak 100–300ms
+        triggerFlash();
+        setTimeout(triggerFlash, Math.random() * 200 + 100);
+        // jadwalkan storm berikutnya
+        scheduleLightning();
+        }, delay);
+    }
+    
+    // mulai scheduling
+    scheduleLightning();
 
     // Element references
     const mergeBtn       = document.getElementById('merge-btn');
@@ -107,9 +158,69 @@ document.addEventListener('DOMContentLoaded', function () {
     const panelContent     = document.querySelector('.panel-content');
     const loadingGif     = document.getElementById('loading-gif');
 
+    // referensi dropdown manual
+    const manualToggle   = document.getElementById('manual-toggle');
+    const manualContainer= document.getElementById('manual-input-container');
+    const manualNameInput= document.getElementById('manual-name');
+    const addManualBtn   = document.getElementById('add-manual');
+
+    let manualOpen = false;
+
     let excelFile = null;
     let excelData = null;
     let individualCertificates = [];
+
+    // Fungsi toggle dengan efek bouncing
+    manualToggle.addEventListener('click', () => {
+        manualOpen = !manualOpen;
+        if (manualOpen) {
+        // buka dropdown
+        manualContainer.classList.remove('hidden', 'bounce-out');
+        manualContainer.classList.add('bounce-in');
+        } else {
+        // tutup dropdown
+        manualContainer.classList.remove('bounce-in');
+        manualContainer.classList.add('bounce-out');
+        manualContainer.addEventListener('animationend', () => {
+            manualContainer.classList.add('hidden');
+        }, { once: true });
+        }
+    });
+
+    // Event tombol "Tambah & Buat" untuk langsung generate satu sertifikat
+    addManualBtn.addEventListener('click', async () => {
+        const name = manualNameInput.value.trim();
+        if (!name) {
+        alert('Masukkan nama dulu!');
+        return;
+        }
+        // siapkan data peserta tunggal
+        const participant = { name: toTitleCase(name), date: '', email: '' };
+        try {
+        loadingPopup.style.display = 'flex';
+        // load template seperti biasa
+        const templateBytes = await fetch('sertifikat.jpg').then(res => {
+            if (!res.ok) throw new Error('Template tidak ditemukan');
+            return res.arrayBuffer();
+        });
+        // buat PDF
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        const font   = await pdfDoc.embedStandardFont(PDFLib.StandardFonts.Helvetica);
+        await createCertificatePage(pdfDoc, participant, templateBytes, font);
+        const pdfBytes = await pdfDoc.save();
+        individualCertificates = [{ name: participant.name, email: '', pdfBytes }];
+        renderCertificateList(individualCertificates);
+        document.querySelector('.right-panel').classList.add('active');
+        hideWithBounce(loadingGif);
+        showWithBounce(panelContent);
+        } catch (err) {
+        console.error(err);
+        alert(`Gagal membuat sertifikat manual: ${err.message}`);
+        } finally {
+        loadingPopup.style.display = 'none';
+        }
+    });
+
 
     // Helper functions for bounce animations
     function showWithBounce(el) {
